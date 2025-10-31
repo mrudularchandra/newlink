@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>New Link | You Ask, We Provide</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;scroll-behavior:smooth;}
+body{
+  font-family:'Inter','SF Pro Display',sans-serif;
+  color:#111;
+  background:linear-gradient(90deg,#e5e5e5,#f8fafc,#dbeafe);
+  background-size:300% 100%;
+  background-position:0% 0%;
+  overflow-x:hidden;
+  transition:background-position 1s ease;
+}
+
+/* CANVAS */
+#hexCanvas{
+  position:fixed;top:0;left:0;width:100%;height:100%;
+  z-index:-2;background:transparent;
+}
+
+/* LOADER */
+#loader{
+  position:fixed;top:0;left:0;width:100%;height:100%;
+  background:#f1f5f9;display:flex;align-items:center;justify-content:center;flex-direction:column;
+  z-index:999;animation:fadeOut 1s ease 2.5s forwards;
+}
+.chain{display:flex;gap:10px;}
+.link{
+  width:28px;height:58px;border:4px solid #2563eb;border-radius:15px;
+  animation:linkBounce 1s infinite alternate;
+}
+.link:nth-child(2){animation-delay:0.25s;}
+.link:nth-child(3){animation-delay:0.5s;}
+@keyframes linkBounce{
+  0%{transform:scaleY(1);opacity:1;}
+  50%{transform:scaleY(0.7);opacity:0.8;}
+  100%{transform:scaleY(1);opacity:1;}
+}
+@keyframes fadeOut{to{opacity:0;visibility:hidden;}}
+
+/* NAVBAR */
+nav{
+  position:fixed;top:0;left:0;width:100%;
+  display:flex;justify-content:space-between;align-items:center;
+  padding:1rem 4rem;z-index:100;
+  background:rgba(255,255,255,0.7);backdrop-filter:blur(10px);
+  box-shadow:0 2px 20px rgba(0,0,0,0.05);
+}
+nav img{height:38px;}
+nav ul{display:flex;gap:2rem;list-style:none;}
+nav ul li a{
+  text-decoration:none;color:#111;font-weight:500;
+  transition:color 0.3s;
+}
+nav ul li a:hover{color:#2563eb;}
+
+/* HERO */
+.hero{
+  min-height:100vh;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  text-align:center;
+  padding:0 1rem;
+}
+.hero h1{
+  font-size:4rem;
+  font-weight:700;
+  background:linear-gradient(to right,#111,#2563eb);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  opacity:0;transform:translateY(40px);
+  animation:fadeUp 1.5s ease forwards 0.8s;
+}
+.hero p{
+  font-size:1.4rem;color:#334155;margin-top:1rem;
+  opacity:0;transform:translateY(40px);
+  animation:fadeUp 1.5s ease forwards 1.2s;
+}
+.hero button{
+  margin-top:2rem;
+  padding:1rem 2.2rem;border:none;border-radius:9999px;
+  background:#2563eb;color:#fff;font-weight:600;font-size:1rem;
+  transition:0.3s;cursor:pointer;opacity:0;animation:fadeUp 1.5s ease forwards 1.6s;
+}
+.hero button:hover{background:#1e3a8a;box-shadow:0 0 25px rgba(37,99,235,0.3);}
+
+/* SECTIONS */
+section{padding:120px 10%;position:relative;overflow:hidden;}
+section h2{font-size:2.4rem;margin-bottom:1.2rem;font-weight:600;color:#111;}
+section p{font-size:1.1rem;color:#475569;max-width:700px;margin:auto;margin-bottom:3rem;line-height:1.6;}
+[data-animate]{opacity:0;transform:translateY(50px) scale(0.98);transition:all 1s ease-out;}
+[data-animate].visible{opacity:1;transform:translateY(0) scale(1);}
+
+/* ABOUT */
+.about-content{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:2rem;}
+.about-content img{width:360px;border-radius:1rem;box-shadow:0 10px 40px rgba(0,0,0,0.1);}
+.about-text{max-width:500px;text-align:left;}
+.about-text h3{color:#2563eb;margin-bottom:1rem;font-size:1.5rem;}
+
+/* SERVICES */
+.services-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:2rem;}
+.service-card{
+  background:#fff;border-radius:1rem;padding:2rem;
+  box-shadow:0 8px 30px rgba(0,0,0,0.08);
+  transition:all 0.4s ease;
+}
+.service-card:hover{transform:translateY(-10px);box-shadow:0 12px 45px rgba(37,99,235,0.15);}
+.service-card h3{color:#2563eb;margin-bottom:0.8rem;}
+
+/* CONTACT */
+.contact-form{max-width:600px;margin:auto;text-align:left;}
+.contact-form input,.contact-form textarea{
+  width:100%;padding:1rem;margin-bottom:1rem;border:1px solid #cbd5e1;border-radius:0.5rem;font-size:1rem;
+}
+.contact-form button{
+  background:#2563eb;color:#fff;border:none;padding:1rem 2rem;border-radius:0.5rem;
+  font-weight:600;transition:0.3s;
+}
+.contact-form button:hover{background:#1e3a8a;}
+
+/* CHATBOT BUTTON */
+.chatbot{
+  position:fixed;bottom:25px;right:25px;
+  width:55px;height:55px;background:#2563eb;
+  border-radius:50%;display:flex;align-items:center;justify-content:center;
+  box-shadow:0 4px 25px rgba(37,99,235,0.4);
+  cursor:pointer;z-index:100;
+  transition:transform 0.3s;
+}
+.chatbot:hover{transform:scale(1.1);}
+.chatbot::before{
+  content:'💬';font-size:1.6rem;color:white;
+}
+
+/* CHATBOX WINDOW */
+.chatbox{
+  position:fixed;bottom:90px;right:25px;width:320px;height:400px;
+  background:rgba(255,255,255,0.25);
+  backdrop-filter:blur(15px);
+  border:1px solid rgba(255,255,255,0.3);
+  border-radius:1rem;
+  box-shadow:0 8px 40px rgba(0,0,0,0.2);
+  overflow:hidden;display:none;flex-direction:column;z-index:99;
+}
+.chatbox header{
+  background:rgba(255,255,255,0.3);
+  padding:1rem;font-weight:600;color:#111;
+  text-align:center;border-bottom:1px solid rgba(255,255,255,0.2);
+}
+.chatbox .messages{
+  flex:1;padding:1rem;overflow-y:auto;
+  font-size:0.95rem;color:#1e293b;
+}
+.chatbox .input-area{
+  display:flex;padding:0.5rem;border-top:1px solid rgba(255,255,255,0.3);
+  background:rgba(255,255,255,0.3);
+}
+.chatbox input{
+  flex:1;padding:0.6rem;border:none;border-radius:0.5rem;
+  outline:none;background:rgba(255,255,255,0.6);
+}
+.chatbox button{
+  background:#2563eb;border:none;color:white;
+  margin-left:0.5rem;padding:0.6rem 1rem;border-radius:0.5rem;
+  cursor:pointer;font-weight:600;
+}
+
+/* ANIMATIONS */
+@keyframes fadeUp{
+  to{opacity:1;transform:translateY(0);}
+}
+
+/* RESPONSIVE */
+@media(max-width:768px){
+  nav{padding:1rem 2rem;}
+  .hero h1{font-size:2.6rem;}
+  .hero p{font-size:1.2rem;}
+}
+</style>
+</head>
+<body>
+<canvas id="hexCanvas"></canvas>
+
+<!-- LOADER -->
+<div id="loader">
+  <div class="chain">
+    <div class="link"></div><div class="link"></div><div class="link"></div>
+  </div>
+  <p style="color:#2563eb;font-weight:600;margin-top:1rem;">Linking Innovation...</p>
+</div>
+
+<!-- NAV -->
+<nav>
+  <img src="logo.png" alt="Logo">
+  <ul>
+    <li><a href="#home">Home</a></li>
+    <li><a href="#about">About</a></li>
+    <li><a href="#services">Services</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section class="hero" id="home">
+  <h1>Empowering Teams.<br>Elevating Workflows.</h1>
+  <p>"You Ask, We Provide"</p>
+  <button>Get Started</button>
+</section>
+
+<!-- ABOUT -->
+<section id="about" data-animate>
+  <h2>About Us</h2>
+  <div class="about-content">
+    <img src="https://images.unsplash.com/photo-1521737604893-d14cc237f11d" alt="Team">
+    <div class="about-text">
+      <h3>Innovation Meets Simplicity</h3>
+      <p>We build seamless digital solutions that simplify collaboration and drive growth — combining design elegance with engineering precision.</p>
+    </div>
+  </div>
+</section>
+
+<!-- SERVICES -->
+<section id="services" data-animate>
+  <h2>Our Services</h2>
+  <div class="services-grid">
+    <div class="service-card"><h3>Workflow Automation</h3><p>Streamline your processes with intelligent automation that adapts to your business.</p></div>
+    <div class="service-card"><h3>Data Insights</h3><p>Gain clarity through analytics-driven performance metrics and visual dashboards.</p></div>
+    <div class="service-card"><h3>Custom Integrations</h3><p>Unify all your favorite tools into one cohesive, efficient ecosystem.</p></div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact" data-animate>
+  <h2>Contact Us</h2>
+  <div class="contact-form">
+    <input type="text" placeholder="Your Name">
+    <input type="email" placeholder="Email">
+    <textarea rows="5" placeholder="Message"></textarea>
+    <button>Send Message</button>
+  </div>
+</section>
+
+<!-- CHATBOT -->
+<div class="chatbot"></div>
+<div class="chatbox" id="chatbox">
+  <header>Chat with Us 💬</header>
+  <div class="messages">
+    <p><strong>Bot:</strong> Hi there! How can we help you today?</p>
+  </div>
+  <div class="input-area">
+    <input type="text" id="userInput" placeholder="Type a message...">
+    <button onclick="sendMessage()">Send</button>
+  </div>
+</div>
+
+<script>
+setTimeout(()=>document.getElementById('loader').style.display='none',3000);
+
+/* Animate sections */
+const observer=new IntersectionObserver(entries=>{
+  entries.forEach(entry=>{
+    if(entry.isIntersecting){entry.target.classList.add('visible');}
+  });
+},{threshold:0.2});
+document.querySelectorAll('[data-animate]').forEach(el=>observer.observe(el));
+
+/* Horizontal background motion */
+window.addEventListener('scroll', () => {
+  const scrollY = window.scrollY;
+  const docHeight = document.body.scrollHeight - window.innerHeight;
+  const progress = scrollY / docHeight;
+  document.body.style.backgroundPosition = `${progress * 200}% 0%`;
+});
+
+/* Canvas Hex Background */
+const canvas=document.getElementById("hexCanvas");
+const ctx=canvas.getContext("2d");
+let w,h,mouse={x:-999,y:-999};
+function resize(){w=canvas.width=window.innerWidth;h=canvas.height=window.innerHeight;}
+window.addEventListener("resize",resize);resize();
+
+function drawHex(x,y,r,fill,stroke){
+  ctx.beginPath();
+  for(let i=0;i<6;i++){
+    const angle=i*Math.PI/3;
+    ctx.lineTo(x+r*Math.cos(angle),y+r*Math.sin(angle));
+  }
+  ctx.closePath();
+  if(fill){ctx.fillStyle=fill;ctx.fill();}
+  if(stroke){ctx.strokeStyle=stroke;ctx.lineWidth=2;ctx.stroke();}
+}
+
+let hexes=[];
+for(let i=0;i<18;i++){
+  hexes.push({x:Math.random()*w,y:Math.random()*h,r:40+Math.random()*25,vx:(Math.random()-0.5)*0.3,vy:(Math.random()-0.5)*0.3});
+}
+canvas.addEventListener("mousemove",e=>{mouse.x=e.clientX;mouse.y=e.clientY;});
+canvas.addEventListener("mouseleave",()=>{mouse.x=-999;mouse.y=-999;});
+
+function animate(){
+  ctx.clearRect(0,0,w,h);
+  for(let hxn of hexes){
+    hxn.x+=hxn.vx;hxn.y+=hxn.vy;
+    const dx=mouse.x-hxn.x,dy=mouse.y-hxn.y;
+    const dist=Math.sqrt(dx*dx+dy*dy);
+    if(dist<200){const f=(200-dist)/200;hxn.vx-=(dx/dist)*f*0.4;hxn.vy-=(dy/dist)*f*0.4;}
+    hxn.vx*=0.98;hxn.vy*=0.98;
+    const glow=Math.max(0,1-dist/200);
+    const stroke=`rgba(37,99,235,${0.2+glow*0.5})`;
+    drawHex(hxn.x,hxn.y,hxn.r,null,stroke);
+  }
+  requestAnimationFrame(animate);
+}
+animate();
+
+/* CHATBOT POPUP */
+const chatbot=document.querySelector('.chatbot');
+const chatbox=document.getElementById('chatbox');
+chatbot.addEventListener('click',()=>{
+  chatbox.style.display = chatbox.style.display==='flex' ? 'none':'flex';
+});
+
+/* SIMPLE CHAT MOCK */
+function sendMessage(){
+  const input=document.getElementById('userInput');
+  const msg=input.value.trim();
+  if(!msg)return;
+  const messages=document.querySelector('.messages');
+  const userMsg=document.createElement('p');
+  userMsg.innerHTML=`<strong>You:</strong> ${msg}`;
+  messages.appendChild(userMsg);
+  input.value='';
+  setTimeout(()=>{
+    const botMsg=document.createElement('p');
+    botMsg.innerHTML=`<strong>Bot:</strong> That's awesome! We'll get back to you soon.`;
+    messages.appendChild(botMsg);
+    messages.scrollTop=messages.scrollHeight;
+  },700);
+}
+</script>
+</body>
+</html>
