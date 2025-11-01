@@ -1,0 +1,15 @@
+/* stylelint-disable at-rule-no-unknown */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+/* stylelint-enable at-rule-no-unknown */
+
+/* ✨ Custom Additions */
+body {
+  @apply bg-gradient-to-br from-indigo-50 via-white to-blue-100 text-gray-800;
+  font-family: 'Poppins', sans-serif;
+}
+
+section {
+  @apply py-20 px-8 md:px-16;
+}
